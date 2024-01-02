@@ -1,8 +1,12 @@
 from sklearn.metrics import roc_auc_score
 import pandas as pd
+import numpy as np
 
 
-###Translation of matlab code from reviewer 1.
+###Translation of matlab code from reviewer 1 - I've just copied the block for the balanced
+#simulation (i.e. 2nd and 3rd row of arrays). The imbalanced simulation just has 
+##different values here corresponding to different imbalances. 
+#then they calc roc-auc using ref (labels) and pre (scores).
 #### matlab :(
 # data(1,:) = [0 0.2 0.5 0.8 1];
 # data(2,:) = [0 4 10 16 20];
@@ -20,6 +24,8 @@ import pandas as pd
 # end
 #######
 ####direct python translation from chatgpt (amended to be more readable).
+
+
 scores = np.array([0, 0.2, 0.5, 0.8, 1])
 values_balanced = np.array([[0, 4, 10, 16, 20],
                              [20, 16, 10, 4, 0]], dtype = int)
@@ -49,7 +55,7 @@ roc_aucs = df.groupby('Type').apply(lambda x:roc_auc_score(x.Label, x.Score))
 av_scores = df.groupby('Type').apply(lambda x:x.groupby('Label')['Score'].mean())
 
 
-### Better code python supremacy 
+### Clearer code
 scores_balanced = np.hstack([scores[i]+np.zeros(values_balanced[0,i]+values_balanced[1,i]) for i in range(5)])
 scores_imbalanced = np.hstack([scores[i]+np.zeros(values_imbalanced[0,i]+values_imbalanced[1,i]) for i in range(5)])
 labels_balanced = np.hstack([np.hstack([np.ones(values_balanced[0,i]), np.zeros(values_balanced[1,i])]) for i in range(5)])
